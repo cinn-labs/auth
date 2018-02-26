@@ -37,7 +37,6 @@ func Generate(signature string) *Model {
 				return "", nil // No error, just no token
 			}
 
-			// TODO: Make this a bit more robust, parsing-wise
 			authHeaderParts := strings.Split(authHeader, " ")
 			if len(authHeaderParts) != 2 || strings.ToLower(authHeaderParts[0]) != "bearer" {
 				return "", errors.New("Authorization header format must be Bearer {token}")
@@ -83,7 +82,7 @@ func Generate(signature string) *Model {
 	}
 
 	getAuthTokenByRequest := func(r *http.Request) string {
-		fullToken := r.Header.Get("Authorization")
+		fullToken := r.Header.Get("Auth")
 		tokenSpl := strings.Split(fullToken, " ")
 		return tokenSpl[1]
 	}
