@@ -31,6 +31,21 @@ func Generate(signature string) *Model {
 			return []byte(signature), nil
 		},
 
+		Extractor: func(r *http.Request) (string, error) {
+			authHeader := r.Header.Get("Auth")
+			if authHeader == "" {
+				return "", nil // No error, just no token
+			}
+
+			// TODO: Make this a bit more robust, parsing-wise
+			authHeaderParts := strings.Split(authHeader, " ")
+			if len(authHeaderParts) != 2 || strings.ToLower(authHeaderParts[0]) != "bearer" {
+				return "", errors.New("Authorization header format must be Bearer {token}")
+			}
+
+			return authHeaderParts[1], nil
+		},
+
 		// When set, the middleware verifies that tokens are signed with the specific signing algorithm
 		// If the signing method is not constant the ValidationKeyGetter callback can be used to implement additional checks
 		// Important to avoid security issues described here: https://auth0.com/blog/2015/03/31/critical-vulnerabilities-in-json-web-token-libraries/
